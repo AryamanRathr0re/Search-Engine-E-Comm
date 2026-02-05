@@ -29,7 +29,7 @@ async function searchProducts(req, res, next) {
     const candidates =
       candidateSet.size > 0
         ? products.filter((p) => candidateSet.has(p.id))
-        : products;
+        : [];
     const ranked = ranking.rankProducts(candidates, {
       tokens: analysis.tokens,
       intent: analysis.intent,

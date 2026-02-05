@@ -1,25 +1,47 @@
 const { normalizeText } = require('./nlp.service');
 
 const baseline = new Map();
+// Minimum final relevance threshold. This guards against low-signal results where
+// the baseline (popularity/stock/recency) and price components might dominate despite
+// weak textual relevance. A threshold improves precision and user trust by ensuring
+// only sufficiently relevant products are shown.
+const MIN_SCORE_THRESHOLD = 0.25;
 
 function clamp(n, min, max) {
   return Math.min(max, Math.max(min, n));
 }
 
-function textRelevanceScore(product, tokens) {
-  if (!tokens || tokens.length === 0) return 0;
-  const hay = [
-    String(product.name || '').toLowerCase(),
-    String(product.brand || '').toLowerCase(),
-    String(product.model || '').toLowerCase(),
-    String(product.description || '').toLowerCase()
-  ].join(' ');
+// Strict text relevance: score is based on exact token matches between the query and
+// product textual fields (title, description, and key metadata). If no tokens match,
+// text relevance is 0.
+function textRelevanceScore(product, queryTokens) {
+  if (!queryTokens || queryTokens.length === 0) return 0;
+  const fields = [
+    product.name,
+    product.description,
+    product.brand,
+    product.model,
+    product.category,
+    product.color,
+    product.storage,
+    product.ram,
+    product.screenSize,
+    product.sku
+  ];
+  const hayTokens = new Set(
+    fields
+      .map((v) => normalizeText(String(v || '')))
+      .join(' ')
+      .split(' ')
+      .filter(Boolean)
+  );
   let hits = 0;
-  for (const t of tokens) {
+  for (const qt of queryTokens) {
+    const t = normalizeText(String(qt || ''));
     if (!t) continue;
-    if (hay.includes(String(t).toLowerCase())) hits += 1;
+    if (hayTokens.has(t)) hits += 1;
   }
-  return hits / tokens.length;
+  return hits / queryTokens.length;
 }
 
 function ratingScore(product) {
@@ -98,8 +120,13 @@ function rankProducts(products, options = {}) {
     return { product: p, score, breakdown: { sText, sPrice, sBase } };
   });
 
-  scored.sort((a, b) => b.score - a.score);
-  return scored;
+  // Strict filtering: require positive text relevance AND a minimum overall score.
+  // This avoids returning popular but semantically unrelated products.
+  const filtered = scored.filter(
+    (s) => s.breakdown.sText > 0 && s.score >= MIN_SCORE_THRESHOLD
+  );
+  filtered.sort((a, b) => b.score - a.score);
+  return filtered;
 }
 
 module.exports = {
