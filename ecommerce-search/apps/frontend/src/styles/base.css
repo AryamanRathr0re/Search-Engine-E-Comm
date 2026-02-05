@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+}
+html, body, #root {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+}
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.search {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.search input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: var(--panel);
+  color: var(--text);
+}
+.search button {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 0;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+.error {
+  color: var(--error);
+}
+.muted {
+  color: var(--muted);
+}
+.results {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+.product-card {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 12px;
+  position: relative;
+}
+.product-card.best-deal {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.2);
+}
+.product-card .badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #22c55e;
+  color: #0b1020;
+  font-size: 0.75rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+}
+.product-card .title {
+  font-weight: 600;
+}
+.product-card .price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+.product-card .price {
+  font-weight: 700;
+}
+.product-card .mrp {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.product-card .discount {
+  color: #22c55e;
+  font-weight: 600;
+}
+.product-card .rating {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  display: flex;
+  gap: 6px;
+}
+.product-card .meta {
+  display: flex;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}
+.product-card .stock {
+  margin-top: 8px;
+  font-weight: 600;
+}
+.product-card .stock.in {
+  color: #22c55e;
+}
+.product-card .stock.out {
+  color: var(--error);
+}
