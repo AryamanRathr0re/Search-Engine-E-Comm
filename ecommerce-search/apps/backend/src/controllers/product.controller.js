@@ -1,18 +1,18 @@
-const catalog = require('../services/catalog.service');
-const Product = require('../models/Product');
+const catalog = require("../services/catalog.service");
+const Product = require("../models/Product");
 
 function isNonEmptyString(v) {
-  return typeof v === 'string' && v.trim().length > 0;
+  return typeof v === "string" && v.trim().length > 0;
 }
 
 function isNumber(v) {
-  return typeof v === 'number' && Number.isFinite(v);
+  return typeof v === "number" && Number.isFinite(v);
 }
 
 async function addProduct(req, res, next) {
   try {
     const b = req.body || {};
-    const requiredString = ['name', 'brand', 'category', 'currency', 'sku'];
+    const requiredString = ["name", "brand", "category", "currency", "sku"];
     for (const k of requiredString) {
       if (!isNonEmptyString(b[k])) {
         const err = new Error(`Invalid ${k}`);
@@ -21,17 +21,17 @@ async function addProduct(req, res, next) {
       }
     }
     if (!isNumber(b.listPrice)) {
-      const err = new Error('Invalid listPrice');
+      const err = new Error("Invalid listPrice");
       err.status = 400;
       throw err;
     }
     if (b.discountPercent !== undefined && !isNumber(b.discountPercent)) {
-      const err = new Error('Invalid discountPercent');
+      const err = new Error("Invalid discountPercent");
       err.status = 400;
       throw err;
     }
     if (!isNumber(b.stock)) {
-      const err = new Error('Invalid stock');
+      const err = new Error("Invalid stock");
       err.status = 400;
       throw err;
     }
@@ -47,7 +47,7 @@ async function updateProductMetaData(req, res, next) {
   try {
     const b = req.body || {};
     if (!isNonEmptyString(b.id)) {
-      const err = new Error('Invalid id');
+      const err = new Error("Invalid id");
       err.status = 400;
       throw err;
     }
@@ -59,7 +59,28 @@ async function updateProductMetaData(req, res, next) {
   }
 }
 
+async function getProductById(req, res, next) {
+  try {
+    const id = String((req.params.productId ?? req.params.id) || "").trim();
+    if (!id) {
+      const err = new Error("Invalid id");
+      err.status = 400;
+      throw err;
+    }
+    const product = catalog.getProductById(id);
+    if (!product) {
+      const err = new Error("Product not found");
+      err.status = 404;
+      throw err;
+    }
+    res.status(200).json({ data: product });
+  } catch (e) {
+    next(e);
+  }
+}
+
 module.exports = {
   addProduct,
-  updateProductMetaData
+  updateProductMetaData,
+  getProductById,
 };

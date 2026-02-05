@@ -1,14 +1,19 @@
-import React from 'react';
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-function formatCurrency(value, currency = 'INR') {
+function formatCurrency(value, currency = "INR") {
   try {
-    return new Intl.NumberFormat('en-IN', { style: 'currency', currency }).format(Number(value || 0));
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency,
+    }).format(Number(value || 0));
   } catch {
     return `₹${Number(value || 0).toFixed(0)}`;
   }
 }
 
 export default function ProductCard({ product }) {
+  const navigate = useNavigate();
   const {
     name,
     brand,
@@ -22,23 +27,37 @@ export default function ProductCard({ product }) {
     currency,
     averageRating,
     ratingCount,
-    stock
+    stock,
   } = product || {};
 
   const current = salePrice ?? price ?? 0;
   const mrp = listPrice ?? current;
-  const discountPercent = mrp > 0 ? Math.round(((mrp - current) / mrp) * 100) : 0;
+  const discountPercent =
+    mrp > 0 ? Math.round(((mrp - current) / mrp) * 100) : 0;
   const inStock = Number(stock || 0) > 0;
   const isBestDeal = discountPercent >= 20;
 
+  const pid = product?.productId ?? product?.id;
+
+  function handleClick() {
+    if (pid) navigate(`/product/${pid}`);
+  }
+
   return (
-    <div className={`product-card${isBestDeal ? ' best-deal' : ''}`}>
+    <div
+      className={`product-card${isBestDeal ? " best-deal" : ""}`}
+      onClick={handleClick}
+    >
       {isBestDeal && <span className="badge">Best Deal</span>}
       <div className="title">{name}</div>
       <div className="price-row">
         <span className="price">{formatCurrency(current, currency)}</span>
-        {mrp > current && <span className="mrp">{formatCurrency(mrp, currency)}</span>}
-        {discountPercent > 0 && <span className="discount">-{discountPercent}%</span>}
+        {mrp > current && (
+          <span className="mrp">{formatCurrency(mrp, currency)}</span>
+        )}
+        {discountPercent > 0 && (
+          <span className="discount">-{discountPercent}%</span>
+        )}
       </div>
       <div className="rating">
         <span className="stars">★ {Number(averageRating || 0).toFixed(1)}</span>
@@ -51,7 +70,9 @@ export default function ProductCard({ product }) {
         {ram && <span>{ram}</span>}
         {screenSize && <span>{screenSize}</span>}
       </div>
-      <div className={`stock ${inStock ? 'in' : 'out'}`}>{inStock ? 'In stock' : 'Out of stock'}</div>
+      <div className={`stock ${inStock ? "in" : "out"}`}>
+        {inStock ? "In stock" : "Out of stock"}
+      </div>
     </div>
   );
 }

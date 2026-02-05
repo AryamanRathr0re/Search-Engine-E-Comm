@@ -45,8 +45,14 @@ function getAllProducts() {
   return Array.from(store.values()).map((p) => p.toJSON());
 }
 
+function getProductById(id) {
+  const p = store.get(String(id));
+  return p ? p.toJSON() : null;
+}
+
 module.exports = {
   addProduct,
   updateProductMetadata,
   getAllProducts,
+  getProductById,
 };
