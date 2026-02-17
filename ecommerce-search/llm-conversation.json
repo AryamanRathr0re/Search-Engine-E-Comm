@@ -1,0 +1,18 @@
+{
+  "title": "LLM Conversation",
+  "createdAt": "2026-02-17T00:00:00.000Z",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You are a helpful assistant."
+    },
+    {
+      "role": "user",
+      "content": "Example: Search for iPhone 13 128 midnight"
+    },
+    {
+      "role": "assistant",
+      "content": "Showing results for iPhone 13 128 GB in midnight color."
+    }
+  ]
+}
